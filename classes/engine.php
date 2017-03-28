@@ -28,10 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 class engine  extends \core_search\engine {
 
-    private $serverhostname = '';
-
+    /**
+     * Initialises the search engine configuration.
+     *
+     * @return void
+     */
     public function __construct() {
-        $this->serverhostname = get_config('search_elasticsearch', 'server_hostname');
+        parent::__construct();
     }
 
     public function is_installed() {
@@ -43,12 +46,12 @@ class engine  extends \core_search\engine {
         global $CFG;
         require_once($CFG->dirroot.'/lib/filelib.php');
         $c = new \curl();
-        return (bool)json_decode($c->get($this->serverhostname));
+        return (bool)json_decode($c->get($this->config->server_hostname . ":" . $this->config->server_port));
     }
 
     public function add_document($document, $fileindexing = false) {
         $doc = $document->export_for_engine();
-        $url = $this->serverhostname.'/moodle/'.$doc['id'];
+        $url = $this->config->server_hostname . ":" . $this->config->server_port . '/' . $this->config->indexname . '/'.$doc['id'];
 
         $jsondoc = json_encode($doc);
 
@@ -81,7 +84,8 @@ class engine  extends \core_search\engine {
      *
      */
     private function make_request($search) {
-        $url = $this->serverhostname.'/moodle/_search?pretty';
+        $url = $this->config->server_hostname . ":" . $this->config->server_port . '/'
+                . $this->config->indexname . '/_search?pretty';
 
         $c = new \curl();
         $results = json_decode($c->post($url, json_encode($search)));
@@ -107,8 +111,12 @@ class engine  extends \core_search\engine {
         } else {
             if (!$results) {
                 return false;
+            } else {
+                throw new \core_search\engine_exception('connectionerror', 'search_elasticsearch', '', $results->error,
+                                                        'Error type: ' . $results->error->type . ' - Reason: '
+                                                            . $results->error->reason . ' - index: ' . $results->error->index );
             }
-            return $results->error;
+            return false;
         }
         return $docs;
     }
@@ -122,7 +130,7 @@ class engine  extends \core_search\engine {
 
     public function delete($module = null) {
         if (!$module) {
-            $url = $this->serverhostname.'/moodle/?pretty';
+            $url = $this->config->server_hostname . ":" . $this->config->server_port . '/' . $this->config->indexname . '/?pretty';
             $c = new \curl();
             if ($response = json_decode($c->delete($url))) {
                 if ( (isset($response->acknowledged) && ($response->acknowledged == true)) ||
