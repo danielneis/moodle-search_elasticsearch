@@ -28,15 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 class engine  extends \core_search\engine {
 
-    /**
-     * Initialises the search engine configuration.
-     *
-     * @return void
-     */
-    public function __construct() {
-        parent::__construct();
-    }
-
     public function is_installed() {
         // Elastic Search only needs curl, and Moodle already requires it, so it is ok to just return true.
         return true;
