@@ -33,6 +33,14 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext('search_elasticsearch/server_hostname',
                                                     new lang_string('serverhostname', 'search_elasticsearch'),
                                                     new lang_string('serverhostname_desc', 'search_elasticsearch'),
-                                                    'localhost:9200', PARAM_TEXT));
+                                                    'localhost', PARAM_TEXT));
+        $settings->add(new admin_setting_configtext('search_elasticsearch/server_port',
+                                                    new lang_string('esearch_httpconnectionport', 'search_elasticsearch'),
+                                                    new lang_string('esearch_httpconnectionport_desc', 'search_elasticsearch'),
+                                                    '9200', PARAM_INT));
+        $settings->add(new admin_setting_configtext('search_elasticsearch/indexname',
+                                                    new lang_string('esearch_indexname', 'search_elasticsearch'),
+                                                    '',
+                                                    'moodle', PARAM_ALPHANUMEXT));
     }
 }
