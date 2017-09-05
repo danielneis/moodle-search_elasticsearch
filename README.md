@@ -1,6 +1,11 @@
 Elasticsearch Search Engine for Moodle
 ---------------------------------------
 
+This plugin was iscontinued. 
+--------------------
+There is more a complete plugin at https://moodle.org/plugins/search_elastic
+-------------------
+
 A plugin to use ElasticSearch as Moodle Global Search engine.
 It should be compatible with version 2.3.3 of ElasticSearch.
 
